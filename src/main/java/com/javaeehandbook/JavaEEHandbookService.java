@@ -51,9 +51,17 @@ public class JavaEEHandbookService {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public void addTechnology(JSONObject jsonTechnology) {
+    public void addTechnology(String jsonTechnology) {
         JavaEETechnology technology = new JavaEETechnology();
-        technology.fromJSON(jsonTechnology);
+        JSONObject json = new JSONObject(jsonTechnology);
+
+        technology.setName(json.getString("name"));
+        technology.setVersionForJava4(json.getString("versionForJava4"));
+        technology.setVersionForJava5(json.getString("versionForJava5"));
+        technology.setVersionForJava6(json.getString("versionForJava6"));
+        technology.setVersionForJava7(json.getString("versionForJava7"));
+        technology.setVersionForJava8(json.getString("versionForJava8"));
+        technology.setDescription(json.getString("description"));
 
         String SQL;
         PreparedStatement preparedStatement;
@@ -98,9 +106,9 @@ public class JavaEEHandbookService {
 
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
-    public void removeTechnology(JSONObject jsonTechnology) {
+    public void removeTechnology(String jsonTechnology) {
         JavaEETechnology technology = new JavaEETechnology();
-        technology.fromJSON(jsonTechnology);
+        technology.fromJSON(new JSONObject(jsonTechnology));
 
         String SQL;
         PreparedStatement preparedStatement;
@@ -117,9 +125,9 @@ public class JavaEEHandbookService {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public void updateTechnology(JSONObject jsonTechnology) {
+    public void updateTechnology(String jsonTechnology) {
         JavaEETechnology technology = new JavaEETechnology();
-        technology.fromJSON(jsonTechnology);
+        technology.fromJSON(new JSONObject(jsonTechnology));
 
         String SQL;
         PreparedStatement preparedStatement;

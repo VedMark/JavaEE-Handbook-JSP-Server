@@ -77,7 +77,8 @@ public class JavaEETechnology {
     }
 
     public JSONObject toJSON() {
-        return new JSONObject("{" + "\"name\": \"" + getName() + '\"' +
+        return new JSONObject("{" + "\"id\": " + getId() +
+                ", \"name\": \"" + getName() + '\"' +
                 ", \"versionForJava4\": \"" + getVersionForJava4() + '\"' +
                 ", \"versionForJava5\": \"" + getVersionForJava5() + '\"' +
                 ", \"versionForJava6\": \"" + getVersionForJava6() + '\"' +
@@ -87,6 +88,7 @@ public class JavaEETechnology {
     }
 
     public void fromJSON(JSONObject json) {
+        this.setId(json.getInt("id"));
         this.setName(json.getString("name"));
         this.setVersionForJava4(json.getString("versionForJava4"));
         this.setVersionForJava5(json.getString("versionForJava5"));
