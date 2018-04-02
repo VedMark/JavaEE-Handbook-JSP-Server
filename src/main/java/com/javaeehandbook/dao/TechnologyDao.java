@@ -1,34 +1,30 @@
-package com.javaeehandbook;
+package com.javaeehandbook.dao;
 
-import com.javaeehandbook.models.JavaEETechnology;
+import com.javaeehandbook.bean.JavaEETechnology;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+public class TechnologyDao {
+    private static final Logger log;
+    private static Database database;
 
-@Path("/javaeehandbook")
-public class JavaEEHandbookService {
-    private static final Logger log = LogManager.getLogger(JavaEEHandbookService.class);
-    private Database database;
-
-    {
+    static {
+        log = LogManager.getLogger(TechnologyDao.class);
         try {
             database = new Database();
         } catch (Exception e) {
+            database = null;
            log.error(e.getMessage());
         }
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public String getAllTechnologies() {
+    public static List<JavaEETechnology> getAllTechnologies() {
         String SQL;
         ResultSet rs;
         List<JavaEETechnology> list = new ArrayList<JavaEETechnology>();
@@ -46,23 +42,11 @@ public class JavaEEHandbookService {
             log.error(e.getMessage());
         }
 
-        return convertJavaEETechnologiesToJSON(list).toString();
+        return list;
     }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void addTechnology(String jsonTechnology) {
-        JavaEETechnology technology = new JavaEETechnology();
-        JSONObject json = new JSONObject(jsonTechnology);
-
-        technology.setName(json.getString("name"));
-        technology.setVersionForJava4(json.getString("versionForJava4"));
-        technology.setVersionForJava5(json.getString("versionForJava5"));
-        technology.setVersionForJava6(json.getString("versionForJava6"));
-        technology.setVersionForJava7(json.getString("versionForJava7"));
-        technology.setVersionForJava8(json.getString("versionForJava8"));
-        technology.setDescription(json.getString("description"));
-
+    public static int addTechnology(JavaEETechnology technology) {
+        int status = 0;
         String SQL;
         PreparedStatement preparedStatement;
         try {
@@ -81,7 +65,7 @@ public class JavaEEHandbookService {
             preparedStatement.setString(8, technology.getVersionForJava6());
             preparedStatement.setString(9, technology.getVersionForJava7());
             preparedStatement.setString(10, technology.getVersionForJava8());
-            preparedStatement.executeUpdate();
+            status = preparedStatement.executeUpdate();
 
             SQL = "INSERT INTO java_technologies(tech_name, versions, description)\n" +
                     "VALUES(?,\n" +
@@ -98,18 +82,15 @@ public class JavaEEHandbookService {
             preparedStatement.setString(6, technology.getVersionForJava8());
             preparedStatement.setString(7, technology.getDescription());
             preparedStatement.setString(8, technology.getName());
-            preparedStatement.executeUpdate();
+            status = preparedStatement.executeUpdate();
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+
+        return status;
     }
 
-    @DELETE
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void removeTechnology(String jsonTechnology) {
-        JavaEETechnology technology = new JavaEETechnology();
-        technology.fromJSON(new JSONObject(jsonTechnology));
-
+    public static void deleteTechnology(JavaEETechnology technology) {
         String SQL;
         PreparedStatement preparedStatement;
         try {
@@ -123,12 +104,7 @@ public class JavaEEHandbookService {
         }
     }
 
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void updateTechnology(String jsonTechnology) {
-        JavaEETechnology technology = new JavaEETechnology();
-        technology.fromJSON(new JSONObject(jsonTechnology));
-
+    public static void updateTechnology(JavaEETechnology technology) {
         String SQL;
         PreparedStatement preparedStatement;
         try {
@@ -169,7 +145,29 @@ public class JavaEEHandbookService {
         }
     }
 
-    private JavaEETechnology fromResultSetToObject(ResultSet rs) throws SQLException {
+    public static JavaEETechnology getTechnologyById(Integer id) {
+        String SQL;
+        ResultSet rs;
+        JavaEETechnology list = new JavaEETechnology();
+
+        try {
+            SQL = "SELECT *\n" +
+                    "FROM java_technologies INNER JOIN used_versions\n" +
+                    "ON java_technologies.versions = used_versions.used_versions_id\n" +
+                    "WHERE java_technologies.tech_id = ?;";
+
+            PreparedStatement statement = database.getConnection().prepareStatement(SQL);
+            statement.setInt(1, id);
+            rs = statement.executeQuery();
+            list =  fromResultSetToObject(rs);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
+        return list;
+    }
+
+    private static JavaEETechnology fromResultSetToObject(ResultSet rs) throws SQLException {
         JavaEETechnology technology = new JavaEETechnology();
         technology.setId(rs.getInt("tech_id"));
         technology.setName(rs.getString("tech_name"));
@@ -181,13 +179,5 @@ public class JavaEEHandbookService {
         technology.setDescription(rs.getString("description"));
 
         return technology;
-    }
-
-    private JSONArray convertJavaEETechnologiesToJSON(List<JavaEETechnology> list) {
-        JSONArray array = new JSONArray();
-        for(JavaEETechnology technology: list) {
-            array.put(technology.toJSON());
-        }
-        return array;
     }
 }

@@ -1,6 +1,4 @@
-package com.javaeehandbook.models;
-
-import org.json.JSONObject;
+package com.javaeehandbook.bean;
 
 public class JavaEETechnology {
     private Integer id = null;
@@ -74,27 +72,5 @@ public class JavaEETechnology {
 
     public void setDescription(String rDescription) {
         this.description = rDescription;
-    }
-
-    public JSONObject toJSON() {
-        return new JSONObject("{" + "\"id\": " + getId() +
-                ", \"name\": \"" + getName() + '\"' +
-                ", \"versionForJava4\": \"" + getVersionForJava4() + '\"' +
-                ", \"versionForJava5\": \"" + getVersionForJava5() + '\"' +
-                ", \"versionForJava6\": \"" + getVersionForJava6() + '\"' +
-                ", \"versionForJava7\": \"" + getVersionForJava7() + '\"' +
-                ", \"versionForJava8\": \"" + getVersionForJava8() + '\"' +
-                ", \"description\": \"" + getDescription() + '\"' + '}');
-    }
-
-    public void fromJSON(JSONObject json) {
-        this.setId(json.getInt("id"));
-        this.setName(json.getString("name"));
-        this.setVersionForJava4(json.getString("versionForJava4"));
-        this.setVersionForJava5(json.getString("versionForJava5"));
-        this.setVersionForJava6(json.getString("versionForJava6"));
-        this.setVersionForJava7(json.getString("versionForJava7"));
-        this.setVersionForJava8(json.getString("versionForJava8"));
-        this.setDescription(json.getString("description"));
     }
 }

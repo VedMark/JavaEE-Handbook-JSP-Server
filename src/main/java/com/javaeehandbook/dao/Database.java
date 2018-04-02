@@ -1,16 +1,16 @@
-package com.javaeehandbook;
+package com.javaeehandbook.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
-public class Database {
+class Database {
     private String url = "";
     private String user = "";
     private String password = "";
 
-    public Database() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    Database() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
 
         Class.forName("com.mysql.jdbc.Driver").newInstance();
 
