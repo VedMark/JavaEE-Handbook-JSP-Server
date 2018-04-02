@@ -67,22 +67,24 @@ public class TechnologyDao {
             preparedStatement.setString(10, technology.getVersionForJava8());
             status = preparedStatement.executeUpdate();
 
-            SQL = "INSERT INTO java_technologies(tech_name, versions, description)\n" +
-                    "VALUES(?,\n" +
-                    "(SELECT used_versions_id\n" +
-                    "FROM used_versions\n" +
-                    "WHERE java_4=? AND java_5=? AND java_6=? AND java_7=? AND java_8=?), ?)\n" +
-                    "ON DUPLICATE KEY UPDATE tech_name=?;";
-            preparedStatement = database.getConnection().prepareStatement(SQL);
-            preparedStatement.setString(1, technology.getName());
-            preparedStatement.setString(2, technology.getVersionForJava4());
-            preparedStatement.setString(3, technology.getVersionForJava5());
-            preparedStatement.setString(4, technology.getVersionForJava6());
-            preparedStatement.setString(5, technology.getVersionForJava7());
-            preparedStatement.setString(6, technology.getVersionForJava8());
-            preparedStatement.setString(7, technology.getDescription());
-            preparedStatement.setString(8, technology.getName());
-            status = preparedStatement.executeUpdate();
+            if (status > 0) {
+                SQL = "INSERT INTO java_technologies(tech_name, versions, description)\n" +
+                        "VALUES(?,\n" +
+                        "(SELECT used_versions_id\n" +
+                        "FROM used_versions\n" +
+                        "WHERE java_4=? AND java_5=? AND java_6=? AND java_7=? AND java_8=?), ?)\n" +
+                        "ON DUPLICATE KEY UPDATE tech_name=?;";
+                preparedStatement = database.getConnection().prepareStatement(SQL);
+                preparedStatement.setString(1, technology.getName());
+                preparedStatement.setString(2, technology.getVersionForJava4());
+                preparedStatement.setString(3, technology.getVersionForJava5());
+                preparedStatement.setString(4, technology.getVersionForJava6());
+                preparedStatement.setString(5, technology.getVersionForJava7());
+                preparedStatement.setString(6, technology.getVersionForJava8());
+                preparedStatement.setString(7, technology.getDescription());
+                preparedStatement.setString(8, technology.getName());
+                status = preparedStatement.executeUpdate();
+            }
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -148,7 +150,7 @@ public class TechnologyDao {
     public static JavaEETechnology getTechnologyById(Integer id) {
         String SQL;
         ResultSet rs;
-        JavaEETechnology list = new JavaEETechnology();
+        JavaEETechnology technology = new JavaEETechnology();
 
         try {
             SQL = "SELECT *\n" +
@@ -159,12 +161,13 @@ public class TechnologyDao {
             PreparedStatement statement = database.getConnection().prepareStatement(SQL);
             statement.setInt(1, id);
             rs = statement.executeQuery();
-            list =  fromResultSetToObject(rs);
+            rs.next();
+            technology = fromResultSetToObject(rs);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
 
-        return list;
+        return technology;
     }
 
     private static JavaEETechnology fromResultSetToObject(ResultSet rs) throws SQLException {

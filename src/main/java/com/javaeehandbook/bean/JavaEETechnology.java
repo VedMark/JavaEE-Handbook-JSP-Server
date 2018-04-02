@@ -2,9 +2,9 @@ package com.javaeehandbook.bean;
 
 public class JavaEETechnology {
     private Integer id = null;
-    private String name;
+    private String name = "";
     private JavaEETechnologyVersions versions;
-    private String description;
+    private String description = "";
 
     public JavaEETechnology() {
         versions = new JavaEETechnologyVersions();
