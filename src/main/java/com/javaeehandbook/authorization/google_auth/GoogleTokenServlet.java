@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.javaeehandbook.ApplicationConstants;
 import com.javaeehandbook.authorization.LoginState;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -30,25 +31,9 @@ public class GoogleTokenServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         switch (LoginState.getLoginState(request)) {
             case NOT_LOGGED_IN:
-                ResourceBundle bundle = ResourceBundle.getBundle("authorization");
-                final String destination = bundle.getString("google.uri_token");
-                String message = "client_id=" + bundle.getString("google.client_id") + "&" +
-                        "client_secret=" + bundle.getString("google.client_secret") + "&" +
-                        "redirect_uri=" + bundle.getString("google.redirect_uri") + "&" +
-                        "grant_type=authorization_code" + "&" +
-                        "code=" + request.getParameter("code");
                 try {
-                    JsonObject tokenJson = getTokenJson(destination, message);
-                    final JsonElement access_token = tokenJson.get("access_token");
-                    if(access_token.isJsonNull()) {
-                        final JsonElement error_description = tokenJson.get("error_description");
-                        log.error(error_description);
-                        throw new Exception(error_description.toString());
-                    } else {
-                        String token = access_token.toString();
-                        LoginState.setLoginState(request, LoginState.LOGGED_IN);
-                        LoginState.setSessionToken(request, token);
-                    }
+                    getAccessToken(request);
+                    getUserInfo(request);
                     response.sendRedirect(request.getContextPath() + ApplicationConstants.PATH_HOME);
 
                 } catch (Exception e) {
@@ -73,6 +58,63 @@ public class GoogleTokenServlet extends HttpServlet {
         new DefaultHttpClient().execute(apiRequest).getEntity().writeTo(stream);
         JsonObject obj = new JsonParser().parse(stream.toString()).getAsJsonObject();
         stream.close();
+
+        return obj;
+    }
+
+    private void getAccessToken(HttpServletRequest request) throws Exception {
+        ResourceBundle bundle = ResourceBundle.getBundle("authorization");
+
+        final String destination = bundle.getString("google.uri_token");
+        String message = "client_id=" + bundle.getString("google.client_id") + "&" +
+                "client_secret=" + bundle.getString("google.client_secret") + "&" +
+                "redirect_uri=" + bundle.getString("google.redirect_uri") + "&" +
+                "grant_type=authorization_code" + "&" +
+                "code=" + request.getParameter("code");
+
+        JsonObject tokenJson = getTokenJson(destination, message);
+        final JsonElement access_token = tokenJson.get("access_token");
+        if(access_token.isJsonNull()) {
+            final JsonElement error_description = tokenJson.get("error_description");
+            log.error(error_description);
+            throw new Exception(error_description.toString());
+        } else {
+            String token = access_token.getAsString();
+            LoginState.setLoginState(request, LoginState.LOGGED_IN);
+            LoginState.setSessionToken(request, token);
+        }
+    }
+
+    private void getUserInfo(HttpServletRequest request) throws IOException {
+        ResourceBundle bundle = ResourceBundle.getBundle("authorization");
+
+        final String requestUrl = bundle.getString("google.user_info_url") + "?" +
+                "alt=json" + "&" +
+                "access_token=" + LoginState.getSessionToken(request);
+        JsonObject userInfo = getUserJson(requestUrl);
+
+        setUserInfoOnMenu(request, userInfo);
+    }
+
+    private void setUserInfoOnMenu(HttpServletRequest request, JsonObject userInfo) {
+        request.setAttribute("user_name", userInfo.get("name").getAsString());
+        request.setAttribute("picture_url", userInfo.get("picture").getAsString());
+
+
+    }
+
+    private JsonObject getUserJson(String requestUrl) throws IOException {
+        HttpGet apiRequest;
+        ByteArrayOutputStream stream;
+
+        apiRequest = new HttpGet(requestUrl);
+
+        stream = new ByteArrayOutputStream();
+        new DefaultHttpClient().execute(apiRequest).getEntity().writeTo(stream);
+        JsonObject obj = new JsonParser().parse(stream.toString()).getAsJsonObject();
+        stream.close();
+
+        System.out.println(obj.toString());
 
         return obj;
     }
