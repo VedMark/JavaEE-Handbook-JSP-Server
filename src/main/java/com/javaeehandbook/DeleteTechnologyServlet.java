@@ -32,7 +32,7 @@ public class DeleteTechnologyServlet extends HttpServlet {
             request.setAttribute("errorMessage", errorMessage);
             this.getServletContext().getRequestDispatcher("/WEB-INF/views/delete_technology_error.jsp").forward(request, response);
         } else {
-            response.sendRedirect(request.getContextPath() + "/viewTechnologies");
+            response.sendRedirect(request.getContextPath() + ApplicationConstants.PATH_TECHNOLOGIES);
         }
     }
 

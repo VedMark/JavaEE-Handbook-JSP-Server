@@ -11,5 +11,8 @@
 <body>
 <jsp:include page="_menu.jsp"/>
 <jsp:include page="_header.jsp"/>
+<div class="centered">
+    <p class="error">${errorMessage}</p>
+</div>
 </body>
 </html>

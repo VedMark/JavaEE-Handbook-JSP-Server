@@ -45,7 +45,7 @@ public class AddTechnologyServlet extends HttpServlet {
         request.setAttribute("errorMessage", errorMessage);
 
         if (errorMessage == null) {
-            response.sendRedirect(request.getContextPath() + "/viewTechnologies");
+            response.sendRedirect(request.getContextPath() + ApplicationConstants.PATH_TECHNOLOGIES);
         } else {
             request.getServletContext().getRequestDispatcher("/WEB-INF/views/add_technology.jsp").forward(request, response);
         }
