@@ -29,8 +29,9 @@ public class DeleteTechnologyServlet extends HttpServlet {
         }
 
         if (errorMessage != null) {
+            request.setAttribute("errorTitle", "Delete Technology Error");
             request.setAttribute("errorMessage", errorMessage);
-            this.getServletContext().getRequestDispatcher("/WEB-INF/views/delete_technology_error.jsp").forward(request, response);
+            this.getServletContext().getRequestDispatcher("/WEB-INF/views/error_page.jsp").forward(request, response);
         } else {
             response.sendRedirect(request.getContextPath() + ApplicationConstants.PATH_TECHNOLOGIES);
         }

@@ -97,10 +97,9 @@ public class GoogleTokenServlet extends HttpServlet {
     }
 
     private void setUserInfoOnMenu(HttpServletRequest request, JsonObject userInfo) {
-        request.setAttribute("user_name", userInfo.get("name").getAsString());
-        request.setAttribute("picture_url", userInfo.get("picture").getAsString());
-
-
+        request.getSession().setAttribute("user_name", userInfo.get("name").getAsString());
+        request.getSession().setAttribute("picture_url", userInfo.get("picture").getAsString());
+        request.getSession().setAttribute("login_display", "none");
     }
 
     private JsonObject getUserJson(String requestUrl) throws IOException {
@@ -113,8 +112,6 @@ public class GoogleTokenServlet extends HttpServlet {
         new DefaultHttpClient().execute(apiRequest).getEntity().writeTo(stream);
         JsonObject obj = new JsonParser().parse(stream.toString()).getAsJsonObject();
         stream.close();
-
-        System.out.println(obj.toString());
 
         return obj;
     }

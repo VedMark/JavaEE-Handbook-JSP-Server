@@ -1,12 +1,9 @@
 package com.javaeehandbook.authorization;
 
-import com.javaeehandbook.ApplicationConstants;
-
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @WebFilter(urlPatterns = { "/addTechnology", "/deleteTechnology", "/editTechnology" })
@@ -22,8 +19,9 @@ public class AuthorizationFilter implements Filter {
 
         switch (loginState) {
             case NOT_LOGGED_IN:
-                request.getSession(false).setAttribute("errorMessage", "Authorization Required!");
-                response.sendRedirect(request.getContextPath() + ApplicationConstants.PATH_HOME);
+                request.setAttribute("errorTitle", "Authorization Error");
+                request.setAttribute("errorMessage", "For changing service resources authorization required!");
+                request.getRequestDispatcher("/WEB-INF/views/error_page.jsp").forward(request, response);
                 break;
             case LOGGED_IN:
                 filterChain.doFilter(servletRequest, servletResponse);

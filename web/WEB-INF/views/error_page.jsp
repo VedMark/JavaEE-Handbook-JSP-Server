@@ -15,7 +15,7 @@
 <jsp:include page="_header.jsp"/>
 
 <div class="centered">
-    <h3>Delete Technology Error!</h3>
+    <h3>${errorTitle}</h3>
     <p class="error">${errorMessage}</p>
 </div>
 </body>

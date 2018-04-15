@@ -54,7 +54,7 @@ table {
     width: 100%;
 }
 
-ul.topnav {
+ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -62,31 +62,52 @@ ul.topnav {
     background-color: #333;
 }
 
-ul.topnav li {float: left;}
+li {
+    float: left;
+}
 
-ul.topnav li a {
-    display: block;
+li a, .dropbtn {
+    display: inline-block;
     color: white;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
 }
 
-ul.topnav li a:hover:not(.active) {background-color: #111;}
-
-ul.topnav li.right {float: right;}
-
-li {
-    border-right: 1px solid #bbb;
+li a:hover, .dropdown:hover .dropbtn {
+    background-color: red;
 }
 
-li:last-child {
-    border-right: none;
+li.dropdown {
+    display: inline-block;
+    float: right;
 }
 
-@media screen and (max-width: 600px){
-    ul.topnav li.right,
-    ul.topnav li {float: none;}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 100px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover {
+    color: black;
+    background-color: #f1f1f1
+}
+
+.dropdown:hover .dropdown-content {
+    color: black;
+    display: block;
 }
 
 input[type=text], input[type=submit], textarea, select {
@@ -145,4 +166,25 @@ tr:nth-child(even){
 th {
     background-color: #4CAF50;
     color: white;
+}
+
+ul li#user_info {
+    align-content: center;
+    display: inline-block;
+    float: right;
+    background: no-repeat;
+}
+
+ul li#user_info a {
+    text-align: center;
+    display: inline-block;
+    float: right;
+    background: no-repeat;
+}
+
+ul li#user_info img {
+    max-width: 40px;
+    min-width: 0;
+    height: auto;
+    margin: 0;
 }

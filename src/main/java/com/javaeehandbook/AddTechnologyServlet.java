@@ -5,7 +5,7 @@ import com.javaeehandbook.dao.TechnologyDao;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import javax.servlet.*;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
